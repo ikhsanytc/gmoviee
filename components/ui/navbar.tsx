@@ -64,7 +64,9 @@ function Navbar() {
                 {isAdmin && (
                   <>
                     <Button variant="default" asChild>
-                      <a onClick={logout}>Logout</a>
+                      <a onClick={logout} className="cursor-pointer">
+                        Logout
+                      </a>
                     </Button>
                     <Button variant="default" asChild>
                       <Link href="/admin">Admin Page</Link>

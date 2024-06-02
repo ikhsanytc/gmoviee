@@ -15,15 +15,15 @@ import { useRouter } from "next/navigation";
 interface Props {
   movie: MoviesModelT;
   deleteProp?: boolean;
-  edit?: boolean;
+  editProp?: boolean;
 }
 
-const CardHome: FC<Props> = ({ movie, deleteProp, edit }) => {
+const CardHome: FC<Props> = ({ movie, deleteProp, editProp }) => {
   const router = useRouter();
   return (
     <>
       <Card className="shadow-lg">
-        <img src={movie.img} alt="" className="rounded-t-lg" />
+        <img src={movie.img} alt="" className="rounded-t-lg mx-auto" />
         <CardHeader>
           <CardTitle>{movie.title}</CardTitle>
           <CardDescription>{movie.desc}</CardDescription>
@@ -42,6 +42,11 @@ const CardHome: FC<Props> = ({ movie, deleteProp, edit }) => {
               }}
             >
               Delete
+            </Button>
+          )}
+          {editProp && (
+            <Button variant="secondary" asChild>
+              <Link href={`/admin/editMovie/${movie.id}`}>Edit</Link>
             </Button>
           )}
         </CardFooter>

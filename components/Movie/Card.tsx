@@ -17,7 +17,7 @@ const CardMovie: FC<Props> = ({ movie, toggleShow, show }) => {
         <CardContent className="mt-5 flex flex-col md:flex-row gap-4">
           <div>
             <div className="dark:bg-blue-600 bg-yellow-500 p-2 rounded-lg">
-              <img src={movie.img} alt="" className="rounded-lg" />
+              <img src={movie.img} alt="" className="rounded-lg mx-auto" />
             </div>
           </div>
           <div className="mb-3">

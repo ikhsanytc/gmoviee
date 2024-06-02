@@ -9,44 +9,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import Navbar from "@/components/ui/navbar";
+import supabase from "@/lib/supabase";
+import { MoviesModelT } from "@/types/model";
+import { useEffect, useState } from "react";
+import { ChangeEvent } from "react";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import Navbar from "@/components/ui/navbar";
-import { useToast } from "@/components/ui/use-toast";
-import createSlug from "@/lib/createSlug";
-import supabase from "@/lib/supabase";
-import { AddMovieT } from "@/types/main";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-function AddMovie() {
-  const router = useRouter();
-  const [img, setImg] = useState("");
+import { AddMovieT } from "@/types/main";
+import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
+import createSlug from "@/lib/createSlug";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+
+function EditMovie({ params: { id } }: { params: { id: number } }) {
+  const [isEmpty, setIsEmpty] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isEmpty, setIsEmpty] = useState(true);
+  const router = useRouter();
+  const [movie, setMovie] = useState<MoviesModelT | null>();
+  const [img, setImg] = useState("");
   const { toast } = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<AddMovieT>();
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        router.push("/admin/login");
-      } else {
-        setIsAdmin(true);
-      }
-    });
-  }, []);
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+
+  function handleChangeImg(e: ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
     if (
       (value !== "" && value.includes("http://")) ||
@@ -58,59 +55,83 @@ function AddMovie() {
       setIsEmpty(true);
     }
   }
-  const handleAdd: SubmitHandler<AddMovieT> = async (dataForm) => {
+
+  const edit: SubmitHandler<AddMovieT> = async (dataForm) => {
     const slug = createSlug(dataForm.title);
-    const { error } = await supabase.from("movies").insert({
-      title: dataForm.title,
-      slug,
-      img: dataForm.img,
-      desc: dataForm.desc,
-      emdbed: dataForm.emdbed,
-    });
+    const { error } = await supabase
+      .from("movies")
+      .update({
+        img: dataForm.img,
+        title: dataForm.title,
+        slug,
+        desc: dataForm.desc,
+        emdbed: dataForm.emdbed,
+      })
+      .eq("id", id)
+      .select();
     if (error) {
       toast({
-        title: "Error while add movie",
+        title: "Error while update",
         description: error.message,
         variant: "destructive",
       });
       return;
     }
     toast({
-      title: "Success",
+      title: "Success!",
+      description: "You'll be redirect.",
     });
+    router.push(`/movie/${slug}/${id}`);
+  };
+
+  async function request() {
     const { data } = await supabase
       .from("movies")
       .select()
-      .eq("slug", slug)
+      .eq("id", id)
       .single();
-    router.push(`/movie/${slug}/${data.id}`);
-  };
+    return data;
+  }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) {
+        router.push("/admin/login");
+      } else {
+        setIsAdmin(true);
+      }
+    });
+    request().then((data) => {
+      setMovie(data);
+      setImg(data.img);
+    });
+  }, []);
   return (
     <Provider center>
       <Navbar />
-      {isAdmin && (
+      {movie && isAdmin && (
         <Card className="w-full md:w-1/2 mt-10">
-          <form onSubmit={handleSubmit(handleAdd)}>
+          <form onSubmit={handleSubmit(edit)}>
             <CardHeader>
-              <CardTitle className="text-center">Add Movie</CardTitle>
+              <CardTitle className="text-center">Edit Movie</CardTitle>
             </CardHeader>
             <Hr space />
             <CardContent className="flex flex-col gap-4">
-              <div className="flex gap-3">
-                <div className="flex flex-col gap-1 w-full">
+              <div className="flex gap-2">
+                <div className="flex w-full flex-col gap-1">
                   <Input
-                    placeholder="Img (width must be 500px)"
-                    className={`${errors.img && "border-red-600"}`}
                     {...register("img", {
                       required: {
                         value: true,
-                        message: "Image is required!",
+                        message: "Img is required!",
                       },
                     })}
-                    onChange={handleChange}
-                    onEmptied={() => setIsEmpty(true)}
+                    className={`${errors.img && "border-red-600"}`}
+                    onChange={handleChangeImg}
+                    defaultValue={movie.img}
+                    placeholder="Img..."
                   />
-                  <p className="text-red-600 text-sm">{errors.img?.message}</p>
+                  <p className="text-sm text-red-600">{errors.img?.message}</p>
                 </div>
                 <Dialog>
                   <DialogTrigger asChild>
@@ -135,51 +156,48 @@ function AddMovie() {
                   </DialogContent>
                 </Dialog>
               </div>
-              <div className="flex flex-col gap-1">
+              <div>
                 <Input
                   placeholder="Title..."
-                  className={`${errors.title && "border-red-600"}`}
                   {...register("title", {
                     required: {
                       value: true,
                       message: "Title is required!",
                     },
                   })}
+                  defaultValue={movie.title}
                 />
-                <p className="text-red-600 text-sm">{errors.title?.message}</p>
               </div>
-              <div className="flex flex-col gap-1">
-                <Input
+              <div>
+                <Textarea
                   placeholder="Description..."
-                  className={`${errors.desc && "border-red-600"}`}
+                  defaultValue={movie.desc}
                   {...register("desc", {
                     required: {
                       value: true,
                       message: "Description is required!",
                     },
                   })}
-                />
-                <p className="text-red-600 text-sm">{errors.desc?.message}</p>
+                ></Textarea>
               </div>
-              <div className="flex flex-col gap-1">
-                <Input
+              <div>
+                <Textarea
                   placeholder="Emdbed..."
-                  className={`${errors.emdbed && "border-red-600"}`}
+                  defaultValue={movie.emdbed}
                   {...register("emdbed", {
                     required: {
                       value: true,
                       message: "Emdbed is required!",
                     },
                   })}
-                />
-                <p className="text-red-600 text-sm">{errors.emdbed?.message}</p>
+                ></Textarea>
               </div>
             </CardContent>
             <Hr space />
             <CardFooter className="flex justify-between">
-              <Button type="submit">Add</Button>
+              <Button type="submit">Submit</Button>
               <Button type="button" variant="outline" asChild>
-                <Link href="/admin">Back</Link>
+                <Link href="/admin/editMovie">Back</Link>
               </Button>
             </CardFooter>
           </form>
@@ -189,4 +207,4 @@ function AddMovie() {
   );
 }
 
-export default AddMovie;
+export default EditMovie;

@@ -1,23 +1,61 @@
 "use client";
 import Provider from "@/components/provider";
 import Navbar from "@/components/ui/navbar";
-import { useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { MoviesModelT } from "@/types/model";
+import CardHome from "@/components/Home/Card";
+import { Input } from "@/components/ui/input";
 
 function EditMovie() {
+  const [keyword, setKeyword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [movies, setMovies] = useState<MoviesModelT[] | null>();
   const router = useRouter();
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
         router.push("/admin/login");
+      } else {
+        setIsAdmin(true);
       }
     });
   }, []);
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    const { value } = e.target;
+    setKeyword(value);
+  }
+  async function request() {
+    const { data } = await supabase
+      .from("movies")
+      .select()
+      .ilike("title", `%${keyword}%`);
+    return data;
+  }
+
+  useEffect(() => {
+    request().then((data) => setMovies(data));
+  }, [keyword]);
   return (
     <Provider>
       <Navbar />
-      <h1>Lanjut besok gua cape pusing dll</h1>
+      {isAdmin && (
+        <>
+          <Input
+            onChange={handleChange}
+            placeholder="Search..."
+            className="w-1/2 mx-auto mb-10"
+          />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {movies?.map((movie, idx) => (
+              <CardHome key={idx} movie={movie} editProp />
+            ))}
+          </div>
+        </>
+      )}
+      <div className="p-5"></div>
     </Provider>
   );
 }
