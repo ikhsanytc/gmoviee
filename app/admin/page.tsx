@@ -98,6 +98,22 @@ function Admin() {
                 </Button>
               </CardFooter>
             </Card>
+            <Card className="shadow">
+              <CardHeader>
+                <CardTitle>Request Film List</CardTitle>
+                <CardDescription>
+                  This function is used to see list of Request Film.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>You can manage a request here.</p>
+              </CardContent>
+              <CardFooter>
+                <Button asChild>
+                  <Link href="/admin/requestFilm">See</Link>
+                </Button>
+              </CardFooter>
+            </Card>
           </div>
         </>
       ) : (

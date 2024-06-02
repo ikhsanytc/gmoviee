@@ -25,6 +25,10 @@ function Navbar() {
       display: "Home",
       link: "/",
     },
+    {
+      display: "Request film",
+      link: "/requestFilm",
+    },
   ];
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -64,12 +68,12 @@ function Navbar() {
                 {isAdmin && (
                   <>
                     <Button variant="default" asChild>
+                      <Link href="/admin">Admin Page</Link>
+                    </Button>
+                    <Button variant="default" asChild>
                       <a onClick={logout} className="cursor-pointer">
                         Logout
                       </a>
-                    </Button>
-                    <Button variant="default" asChild>
-                      <Link href="/admin">Admin Page</Link>
                     </Button>
                   </>
                 )}
@@ -94,18 +98,18 @@ function Navbar() {
             ))}
             {isAdmin && (
               <>
-                <a
-                  onClick={logout}
-                  className="font-semibold hover:border-b-2 cursor-pointer dark:hover:border-b-blue-500 hover:border-b-yellow-400"
-                >
-                  Logout
-                </a>
                 <Link
                   href="/admin"
                   className="font-semibold hover:border-b-2 cursor-pointer dark:hover:border-b-blue-500 hover:border-b-yellow-400"
                 >
                   Admin Page
                 </Link>
+                <a
+                  onClick={logout}
+                  className="font-semibold hover:border-b-2 cursor-pointer dark:hover:border-b-blue-500 hover:border-b-yellow-400"
+                >
+                  Logout
+                </a>
               </>
             )}
             <ToggleTheme theme={theme} setTheme={setTheme} size="icon" />

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Navbar from "@/components/ui/navbar";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import createSlug from "@/lib/createSlug";
 import supabase from "@/lib/supabase";
@@ -89,7 +90,7 @@ function AddMovie() {
     <Provider center>
       <Navbar />
       {isAdmin && (
-        <Card className="w-full md:w-1/2 mt-10">
+        <Card className="w-full md:w-1/2 mt-20 mb-20">
           <form onSubmit={handleSubmit(handleAdd)}>
             <CardHeader>
               <CardTitle className="text-center">Add Movie</CardTitle>
@@ -149,7 +150,7 @@ function AddMovie() {
                 <p className="text-red-600 text-sm">{errors.title?.message}</p>
               </div>
               <div className="flex flex-col gap-1">
-                <Input
+                <Textarea
                   placeholder="Description..."
                   className={`${errors.desc && "border-red-600"}`}
                   {...register("desc", {
@@ -158,11 +159,11 @@ function AddMovie() {
                       message: "Description is required!",
                     },
                   })}
-                />
+                ></Textarea>
                 <p className="text-red-600 text-sm">{errors.desc?.message}</p>
               </div>
               <div className="flex flex-col gap-1">
-                <Input
+                <Textarea
                   placeholder="Emdbed..."
                   className={`${errors.emdbed && "border-red-600"}`}
                   {...register("emdbed", {
@@ -171,7 +172,7 @@ function AddMovie() {
                       message: "Emdbed is required!",
                     },
                   })}
-                />
+                ></Textarea>
                 <p className="text-red-600 text-sm">{errors.emdbed?.message}</p>
               </div>
             </CardContent>

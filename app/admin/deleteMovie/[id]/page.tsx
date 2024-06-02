@@ -30,10 +30,8 @@ function DeleteMovie({ params: { id } }: { params: { id: number } }) {
   }
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        router.push("/admin/login");
-      }
-      deleteMovie();
+      if (!user) router.push("/admin/login");
+      else deleteMovie();
     });
   }, []);
   return (

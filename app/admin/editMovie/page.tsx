@@ -4,7 +4,6 @@ import Navbar from "@/components/ui/navbar";
 import { ChangeEvent, useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { MoviesModelT } from "@/types/model";
 import CardHome from "@/components/Home/Card";
 import { Input } from "@/components/ui/input";
