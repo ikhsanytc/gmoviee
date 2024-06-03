@@ -29,6 +29,10 @@ function Navbar() {
       display: "Request film",
       link: "/requestFilm",
     },
+    {
+      display: "Report Bug",
+      link: "/reportBug",
+    },
   ];
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {

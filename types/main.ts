@@ -22,13 +22,4 @@ interface RequestFilmFormT {
   reason: string;
 }
 
-interface RequestFilmT {
-  id: number;
-  email: string;
-  username: string;
-  filmName: string;
-  reason: string;
-  created_at: string;
-}
-
-export type { LinkNavbar, LoginT, AddMovieT, RequestFilmFormT, RequestFilmT };
+export type { LinkNavbar, LoginT, AddMovieT, RequestFilmFormT };

@@ -10,7 +10,7 @@ export function Search({
   setMovies,
 }: {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  setMovies: Dispatch<SetStateAction<MoviesModelT[] | null | undefined>>;
+  setMovies: Dispatch<SetStateAction<MoviesModelT[] | null>>;
 }) {
   const searchParams = useSearchParams();
   const keyword = searchParams.get("q") || "";
@@ -28,7 +28,7 @@ export function Search({
   return (
     <>
       <Input
-        className="w-1/2 mx-auto mb-10"
+        className="w-full md:w-1/2 mx-auto mb-10"
         placeholder="Search Film..."
         onChange={handleChange}
         defaultValue={keyword}
