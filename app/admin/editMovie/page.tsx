@@ -3,13 +3,14 @@ import Provider from "@/components/provider";
 import Navbar from "@/components/ui/navbar";
 import { ChangeEvent, useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { MoviesModelT } from "@/types/model";
 import CardHome from "@/components/Home/Card";
 import { Input } from "@/components/ui/input";
 
 function EditMovie() {
-  const [keyword, setKeyword] = useState("");
+  const useParams = useSearchParams();
+  const keyword = useParams.get("q") || "";
   const [isAdmin, setIsAdmin] = useState(false);
   const [movies, setMovies] = useState<MoviesModelT[] | null>();
   const router = useRouter();
@@ -24,7 +25,9 @@ function EditMovie() {
   }, []);
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
-    setKeyword(value);
+    router.push(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/editMovie/?q=${value}`
+    );
   }
   async function request() {
     const { data } = await supabase
@@ -45,6 +48,7 @@ function EditMovie() {
           <Input
             onChange={handleChange}
             placeholder="Search..."
+            defaultValue={keyword}
             className="w-1/2 mx-auto mb-10"
           />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">

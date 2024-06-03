@@ -6,17 +6,20 @@ import { Input } from "@/components/ui/input";
 import Navbar from "@/components/ui/navbar";
 import supabase from "@/lib/supabase";
 import { MoviesModelT } from "@/types/model";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 
 function DeletMovie() {
-  const [keyword, setKeyword] = useState("");
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get("q") || "";
   const [isAdmin, setIsAdmin] = useState(false);
   const [movies, setMovies] = useState<MoviesModelT[] | null>();
   const router = useRouter();
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const { value } = e.target;
-    setKeyword(value);
+    router.push(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/admin/deleteMovie/?q=${value}`
+    );
   }
   async function request() {
     const { data } = await supabase
@@ -46,6 +49,7 @@ function DeletMovie() {
             className="w-1/2 mx-auto mb-10"
             placeholder="Search Film..."
             onChange={handleChange}
+            defaultValue={keyword}
           />
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {movies?.map((movie, idx) => (
