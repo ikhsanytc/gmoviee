@@ -35,10 +35,13 @@ const ReportBugForm: React.FC = () => {
     formData.append("files", dataForm.img[0]);
 
     try {
-      const response = await fetch("/api/uploadImg", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/uploadImg`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       if (!response.ok) {
         toast({
