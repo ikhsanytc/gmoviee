@@ -1,17 +1,16 @@
 "use client";
 import CardHome from "@/components/Home/Card";
 import Provider from "@/components/provider";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import Navbar from "@/components/ui/navbar";
 import supabase from "@/lib/supabase";
 import { MoviesModelT } from "@/types/model";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Search } from "@/components/ui/Search";
+import { ChangeEvent, Suspense, useEffect, useState } from "react";
 
-function DeletMovie() {
-  const searchParams = useSearchParams();
-  const keyword = searchParams.get("q") || "";
+function DeleteMovie() {
+  // const searchParams = useSearchParams();
+  // const keyword = searchParams.get("q") || "";
   const [isAdmin, setIsAdmin] = useState(false);
   const [movies, setMovies] = useState<MoviesModelT[] | null>();
   const router = useRouter();
@@ -22,15 +21,12 @@ function DeletMovie() {
     );
   }
   async function request() {
-    const { data } = await supabase
-      .from("movies")
-      .select()
-      .ilike("title", `%${keyword}%`);
+    const { data } = await supabase.from("movies").select();
     return data;
   }
   useEffect(() => {
     request().then((data) => setMovies(data));
-  }, [keyword]);
+  }, []);
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) {
@@ -45,12 +41,9 @@ function DeletMovie() {
       <Navbar />
       {isAdmin && (
         <>
-          <Input
-            className="w-1/2 mx-auto mb-10"
-            placeholder="Search Film..."
-            onChange={handleChange}
-            defaultValue={keyword}
-          />
+          <Suspense>
+            <Search handleChange={handleChange} setMovies={setMovies} />
+          </Suspense>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {movies?.map((movie, idx) => (
               <CardHome key={idx} movie={movie} deleteProp />
@@ -63,4 +56,4 @@ function DeletMovie() {
   );
 }
 
-export default DeletMovie;
+export default DeleteMovie;
