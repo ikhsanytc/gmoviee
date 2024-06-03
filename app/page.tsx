@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ChangeEvent, Suspense, useEffect, useState } from "react";
 
 function Home() {
-  const [movies, setMovies] = useState<MoviesModelT[] | null>();
+  const [movies, setMovies] = useState<MoviesModelT[] | null>(null);
   const router = useRouter();
   async function request() {
     const { data } = await supabase.from("movies").select();
